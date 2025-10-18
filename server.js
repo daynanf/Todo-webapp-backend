@@ -1,5 +1,5 @@
 import express from 'express';
-import todoRouter from './routes/todos.js';
+import router from './routes/todos.js';
 import  todos from './data/Todos.js'
 
 const app = express();
@@ -10,5 +10,18 @@ app.use(express.json());
 app.get('/',(req,res)=>{
   res.send('middleware dojo active')
 })
+app.use('/api', router);
+app.use((err,req,res,next)=>{
+  console.error(err.stack)
+  res.status(500).json({
+    error: err.message
+  })
+})
 
-app.use
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
