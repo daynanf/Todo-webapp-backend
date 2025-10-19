@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 export const connectDB = async () => {
  const URI = process.env.MONGODB_URI;
  await mongoose.connect(URI).then(()=>{
-  console.log("Database Connected .....");
-  
-})
+  console.log("Database Connected ....."); 
+}).catch( err => console.log('MONGODB error',err))
 } 
