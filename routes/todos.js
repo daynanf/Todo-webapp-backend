@@ -1,6 +1,6 @@
 import express from 'express';
 import todos  from '../data/Todos.js';
-
+import Todo from '../models/todos.js'
 const router =express.Router();
 
 const validateTodo = (req,res,next) => {
@@ -34,11 +34,11 @@ router.get('/todos/:id', (req, res, next) => {
   res.json(todo);
 });
 
-router.post('/todos', validateTodo, (req, res) => {
+router.post('/todos', validateTodo, async (req, res) => {
   const { task, done = false } = req.body;
-  const newTodo = { id: nextId++, task, done, createdAt: req.timestamp };
-  todos.push(newTodo);
-  res.status(201).json(newTodo);
+  const newTodo = {  task, done, createdAt: req.timestamp };
+  const createdTodo = await Todo.create(newTodo);
+  res.status(201).json(createdTodo);
 });
 
 // PUT and DELETE routes (add validateTodo for PUT)
