@@ -13,21 +13,18 @@ const validateTodo = (req,res,next) => {
   next();
 };
 
-router.get('/todos', (req, res) => {
-  let filtered = todos;
-  if (req.query.done !== undefined) {
-    const done = req.query.done === 'true';
-    filtered = todos.filter(t => t.done === done);
-  }
+router.get('/todos', async (req, res) => {
+  let filtered = await Todo.find();
+  // if (req.query.done !== undefined) {
+  //   const done = req.query.done === 'true';
+  //   filtered = filtered.filter(t => t.done === done);
+  // }
   res.json(filtered);
 });
 
-router.get('/todos/:id', (req, res, next) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    return next(new Error('ID must be numeric'));
-  }
-  const todo = todos.find(t => t.id === id);
+router.get('/todos/:id',async (req, res, next) => {
+  const id = req.params.id;
+  let todo = await Todo.findById(id);
   if (!todo) {
     return res.status(404).json({ error: 'Todo not found' });
   }
@@ -36,32 +33,27 @@ router.get('/todos/:id', (req, res, next) => {
 
 router.post('/todos', validateTodo, async (req, res) => {
   const { task, done = false } = req.body;
-  const newTodo = new Todo ({  task, done });
-  await newTodo.save();
+  const newTodo = await Todo.create({  task, done });
+  
   res.status(201).send(`New Todo Created${newTodo}`);
 });
 
 // PUT and DELETE routes (add validateTodo for PUT)
-router.put('/todos/:id', validateTodo, (req, res) => {
-  const id = parseInt(req.params.id);
-  const todo = todos.find(t => t.id === id);
+router.put('/todos/:id', validateTodo, async (req, res) => {
+  const id = req.params.id;
+  const todo = await Todo.findByIdAndUpdate(req.params.id,req.body)
   if (!todo) {
     return res.status(404).json({ error: 'Todo not found' });
   }
-  const { task, done } = req.body;
-  if (task) todo.task = task;
-  if (done !== undefined) todo.done = done;
   res.json(todo);
 });
 
 router.delete('/todos/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = todos.findIndex(t => t.id === id);
-  if (index === -1) {
+  const todo = Todo.findByIdAndDelete(req.params.id)
+  if (!todo) {
     return res.status(404).json({ error: 'Todo not found' });
   }
-  todos.splice(index, 1);
-  res.sendStatus(204);
+  res.status(204).send("Deleted sucessfully");
 });
 
 export default router;
