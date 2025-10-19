@@ -1,10 +1,11 @@
 import express from 'express';
 import router from './routes/todos.js';
-import  todos from './data/Todos.js'
+import { connectDB } from './config/db.js';
 
 const app = express();
 const port = 3000;
 
+await connectDB();
 app.use(express.json());
 
 app.get('/',(req,res)=>{
