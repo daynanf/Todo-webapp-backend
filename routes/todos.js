@@ -36,9 +36,9 @@ router.get('/todos/:id', (req, res, next) => {
 
 router.post('/todos', validateTodo, async (req, res) => {
   const { task, done = false } = req.body;
-  const newTodo = {  task, done, createdAt: req.timestamp };
-  const createdTodo = await Todo.create(newTodo);
-  res.status(201).json(createdTodo);
+  const newTodo = new Todo ({  task, done });
+  await newTodo.save();
+  res.status(201).send(`New Todo Created${newTodo}`);
 });
 
 // PUT and DELETE routes (add validateTodo for PUT)
